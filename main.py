@@ -2,6 +2,8 @@ import asyncio
 import logging
 import sys
 from os import getenv
+
+
 from utils.products import get_all_products, get_all_categories
 from utils.formatter import formatter_msg_with_product, formatter_msg_with_all_categories
 
@@ -24,7 +26,7 @@ def get_main_keyboard():
     return {
         "keyboard": [
             [{"text": "⚙️Налаштування"}, {"text": "🏚Про нас"}],
-            [{"text": "📞Зв'язатися з нами"}],
+            [{"text": "📞Зв'язатися з нами"}, {"text": "СПАМ МАТВІЯ"}],
             [{"text": "🥡Продукти"}]
         ],
         "resize_keyboard": False
@@ -56,6 +58,7 @@ def get_categories_inline_keyboard(categories):
 async def command_start_handler(message: Message) -> None:
     await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
     await message.answer("Мур-мур-мур", reply_markup=get_main_keyboard())
+    print("__USER_ID", message.from_user.id)
 
 
 @dp.message()
@@ -81,6 +84,12 @@ async def reply_keyboard_handler(message: Message) -> None:
         categories = get_all_categories()
         text_msg = formatter_msg_with_all_categories(categories)
         await message.answer("Категорії продуктів:", reply_markup=get_categories_inline_keyboard(categories))
+    elif msg == "СПАМ МАТВІЯ":
+        for i in range(30):
+            user_id = "5790648458"
+            # send message to user with user_id
+
+
 
 
 # @dp.message()
