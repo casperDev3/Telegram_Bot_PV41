@@ -2,19 +2,21 @@ import asyncio
 import logging
 import sys
 from os import getenv
+from pyexpat.errors import messages
 
 
 from utils.products import get_all_products, get_all_categories
 from utils.formatter import formatter_msg_with_product, formatter_msg_with_all_categories
 
-from aiogram import Bot, Dispatcher, html
+from aiogram import Bot, Dispatcher, html, Router, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
 # Bot token can be obtained via https://t.me/BotFather
-TOKEN = "7331456101:AAHmQ0Sf6NqQCEjfIC57uWgaR_umLIKzF2U"
+TOKEN = "7331456101:AAHkR3dSvGK-j5iXM8aD_vlr8h77Bebj4ow"
+router = Router()
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -27,7 +29,7 @@ def get_main_keyboard():
         "keyboard": [
             [{"text": "⚙️Налаштування"}, {"text": "🏚Про нас"}],
             [{"text": "📞Зв'язатися з нами"}, {"text": "СПАМ МАТВІЯ"}],
-            [{"text": "🥡Продукти"}]
+            [{"text": "🥡Продукти"}, {"text": "Inline Keyboard Test"}]
         ],
         "resize_keyboard": False
     }
@@ -52,6 +54,28 @@ def get_categories_inline_keyboard(categories):
     return {
         "inline_keyboard": keyboard
     }
+
+
+def get_test_inline_keyboard():
+    keyboard = [
+            [{"text": "Inline 1", "callback_data": "inl_1"},
+             {"text": "Inline 2", "callback_data": "inl_2"}],
+            [{"text": "Inline 3", "callback_data": "inl_3"}]
+        ]
+    return {
+        "inline_keyboard": keyboard
+    }
+
+# Опрацювання inline keyboard
+@router.callback_query(lambda c: c.data and c.data.startswith("inl_"))
+async def test_callback_handler(callback_query: types.CallbackQuery):
+    try:
+        print("test")
+        data = callback_query.data
+        print("__data", data)
+        await callback_query.answer()  # Завершуємо обробку callback
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 @dp.message(CommandStart())
@@ -88,8 +112,9 @@ async def reply_keyboard_handler(message: Message) -> None:
         for i in range(30):
             user_id = "5790648458"
             # send message to user with user_id
-
-
+    elif msg == "Inline Keyboard Test":
+        await message.answer("Inline Work!",
+                             reply_markup=get_test_inline_keyboard())
 
 
 # @dp.message()
